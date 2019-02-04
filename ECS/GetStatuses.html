@@ -1,0 +1,80 @@
+<html>
+    <meta http-equiv="refresh" content="17">
+        <link href="./css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="./main.css">
+<body style="padding: 20px; ">
+<script src="https://rawgit.com/ethereum/web3.js/0.16.0/dist/web3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/ethjs@0.3.0/dist/ethjs.min.js"></script>
+<script>
+    
+window.addEventListener('load', function() {
+            // Check if Web3 has been injected by the browser:
+            if (typeof web3 !== 'undefined') {
+                // You have a web3 browser! Continue below!
+                startApp(web3);
+            } else {
+                // Warn the user that they need to get a web3 browser
+                // Or install MetaMask, maybe with a nice graphic.
+            }
+        });
+        const abi = [{
+            "constant": true,
+            "inputs": [ 
+                {  	 	 
+                     "name": "friend",
+                    "type": "address"
+                }
+            ],
+            "name": "getFriendStatus",
+            "outputs": [
+                {
+                    "name": "text",
+                    "type": "string"
+                }
+            ],
+            "payable": false,
+            "type": "function"
+        }];
+        const contract_address = '0x7304b1d58006d1D546500C477390b7a11A4f59Bc';
+        var address = '0x7304b1d58006d1D546500C477390b7a11A4f59Bc';
+        var eth = null;
+        var nicky = "h";
+        var cuenta = "h";
+        function startApp(web3) {
+            //alert("entro");
+            
+            web3.eth.getAccounts(function(err, accounts) { 
+                console.log(accounts); 
+                document.getElementById("etherlog").innerHTML = "Cargando cuentas.. "+ accounts; 
+                address = accounts.toString(); 
+                document.getElementById("etherlog").innerHTML = "";
+                eth = new Eth(web3.currentProvider);
+                
+                var nicks = window.sessionStorage.getItem("FriendNicks").split("|");
+                var i = 0;                
+                while( i < nicks.length) {
+                    //alert(nicks[i]);
+                    cuenta = window.sessionStorage.getItem(nicks[i]);
+                    nicky=nicks[i];
+                    i++;
+                    if ( nicky != "null") {
+                    document.getElementById("etherlog").innerHTML = document.getElementById("etherlog").innerHTML + "<br>Viewing friend status<b>" + nicky + "</b>-" + cuenta;
+                    eth.contract(abi).at(contract_address).getFriendStatus(cuenta,  { from: address} ).then(function(text) {
+                    console.log("Text", text);
+                    document.getElementById("etherlog").innerHTML = document.getElementById("etherlog").innerHTML + text.text + "<br><hr><br>";
+                    }).catch(function(err) {
+                    console.error("problem getting tester", err);
+                    });
+                    }
+                }
+                document.getElementById("etherlog").innerHTML = document.getElementById("etherlog").innerHTML + "<br>";
+                
+                
+            
+        });
+        }
+        
+</script>
+<div id="etherlog">LOG</div>
+</body>
+</html>

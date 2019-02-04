@@ -1,0 +1,111 @@
+<html>
+<body>
+<script src="http://rawgit.com/ethereum/web3.js/0.16.0/dist/web3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/ethjs@0.3.0/dist/ethjs.min.js"></script>
+<br><b>FRIEND STATUSES</b><br>
+<script>
+window.addEventListener('load', function() {
+            // Check if Web3 has been injected by the browser:
+            if (typeof web3 !== 'undefined') {
+                // You have a web3 browser! Continue below!
+                startApp(web3);
+            } else {
+                // Warn the user that they need to get a web3 browser
+                // Or install MetaMask, maybe with a nice graphic.
+            }
+        });
+        const abi = [{
+            "constant": false,
+            "inputs": [ 
+                {  	 	 
+                    "name": "text",	 	 
+                    "type": "string"	 	 
+                }
+            ],
+            "name": "setMyStatus",
+            "outputs": [
+                {
+                    "name": "success",
+                    "type": "bool"
+                }
+            ],
+            "payable": false,
+            "type": "function"
+        }];
+        const contract_address = '0x7304b1d58006d1D546500C477390b7a11A4f59Bc';
+        var address = '0x7304b1d58006d1D546500C477390b7a11A4f59Bc';
+        var eth = null;
+        function startApp(web3) {
+            //alert("entro");
+            document.getElementById("etherlog").innerHTML = "Enterng web3";
+            eth = new Eth(web3.currentProvider);
+            const token = eth.contract(abi).at(contract_address);
+            listenForClicks(token,web3);
+            //alert("llego");
+            
+        }
+        function listenForClicks (miniToken, web3) {
+            var button = document.getElementById("etherforart");
+            //alert(button);
+            document.getElementById("etherlog").innerHTML = "Web3 loaded";
+            document.getElementById("etherforart").src = "http://www.freepngimg.com/thumb/submit_button/25395-2-submit-button-thumb.png";
+            document.getElementById("etherlink").remove();
+            //document.getElementById("etherforartcompra").hidden = true;
+
+            document.getElementById("etherlog").innerHTML = "Loading Ether Account with Metamask";
+            web3.eth.getAccounts(function(err, accounts) { console.log(accounts); document.getElementById("etherlog").innerHTML = "Loading account... "+ accounts; address = accounts.toString(); });
+            button.addEventListener('click', function() {
+                // 1 Eth = '1000000000000000000'
+                var value= document.getElementById("amount").value;
+                alert("Record client email and account: "+value);
+                miniToken.setMyStatus( ''+value, { from: address})
+                    .then(function (txHash) {
+                    console.log('Transaction sent');
+                    console.dir(txHash);
+                    waitForTxToBeMined(txHash);
+                    document.getElementById("etherlog").innerHTML = "txHash:" + txHash;
+                })
+                    .catch(console.error);
+            });
+            
+        };
+        async function waitForTxToBeMined (txHash) {
+            let txReceipt;
+            while (!txReceipt) {
+                try {
+                    txReceipt = await eth.getTransactionReceipt(txHash);
+                    //var data = [];
+                    //data.append(eth.getTransactionReceipt(txReceipt).data);
+                    //console.log(data);
+                    document.getElementById("etherlog").innerHTML = "Waiting transaction to be validated " + txHash;
+                } catch (err) {
+                    document.getElementById("etherlog").innerHTML = "ERROR:"+err;
+                    return indicateFailure(err);
+                }
+            }
+            document.getElementById("etherlog").innerHTML = "Transaction OK! " + txHash;
+            //document.getElementById("etherforart").hidden = true;
+            //document.getElementById("etherforartcompra").hidden = false;
+            indicateSuccess();
+        }
+        
+        function add_user() {
+            alert("hola");
+            nick = prompt("Enter the nickname");
+            address = prompt("Enter the address");
+            window.sessionStorage.setItem(nick, address);
+            window.sessionStorage.setItem("FriendNicks", nick+"|"+window.sessionStorage.getItem("FriendNicks"));
+            alert(window.sessionStorage.getItem("FriendNicks"));
+        }
+</script>
+<input type="text" id="amount"></input> Text
+<br>
+<input type="button" value="ADD FRIEND ADDRESS" onclick="javascript:add_user()"></input>
+<p><a href="https://metamask.io/" id="etherlink" target="new">DOWNLOAD METAMASK FOR GOOGLE CHROME</a><br>
+<img id="etherforart" src="http://btrash.io/wp-content/uploads/2018/02/ethereum-metamask-chrome.png"></p>
+<div id="etherlog">LOG</div>
+<a href="https://rinkeby.etherscan.io/address/0x7304b1d58006d1D546500C477390b7a11A4f59Bc#code" target="new">Token Contract: 0x7304b1d58006d1D546500C477390b7a11A4f59Bc</a>
+<iframe name="status" id="status" marginwidth="0" marginheight="0" height="500px" width="100%" scrolling="no" frameborder="0" src="GetStatuses.html"></iframe>
+
+</body>
+</html>
