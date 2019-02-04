@@ -1,0 +1,10 @@
+[
+  {
+  "name":"example1",
+  "address":"0x0705f512ccf555d211196b1aabe1dde75902c395"
+  },
+  {
+  "name":"example2",
+  "address":"0x91612055a68ad74a6e756615941ac59e9220a940"
+  }
+]

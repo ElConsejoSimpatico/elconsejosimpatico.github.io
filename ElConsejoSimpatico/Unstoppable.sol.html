@@ -1,0 +1,20 @@
+pragma solidity ^0.4.16;
+
+contract Unstoppable {
+    struct UnstoppableStatus {
+        address author;
+        string description;
+    }
+    
+    mapping (address => UnstoppableStatus) private statuses;
+    event Log(address author, string text);
+    
+    function setMyStatus (string text) public {
+        statuses[msg.sender] = UnstoppableStatus(msg.sender, text);
+        emit Log(msg.sender, text);
+    }
+    
+    function getFriendStatus (address friend) public view returns (string) {
+        return statuses[friend].description;
+    }
+}

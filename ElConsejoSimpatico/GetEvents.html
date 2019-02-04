@@ -1,0 +1,70 @@
+<html>
+    <meta http-equiv="refresh" content="17">
+        <link href="./css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="./main.css">
+<body style="padding: 20px; ">
+<script src="https://rawgit.com/ethereum/web3.js/0.16.0/dist/web3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/ethjs@0.3.0/dist/ethjs.min.js"></script>
+<script>
+    
+window.addEventListener('load', function() {
+            // Check if Web3 has been injected by the browser:
+            if (typeof web3 !== 'undefined') {
+                // You have a web3 browser! Continue below!
+                startApp(web3);
+            } else {
+                // Warn the user that they need to get a web3 browser
+                // Or install MetaMask, maybe with a nice graphic.
+            }
+        });
+        const abi = [{
+            "constant": true,
+            "inputs": [ 
+                {  	 	 
+                     "name": "friend",
+                    "type": "address"
+                }
+            ],
+            "name": "getFriendStatus",
+            "outputs": [
+                {
+                    "name": "text",
+                    "type": "string"
+                }
+            ],
+            "payable": false,
+            "type": "function"
+        }];
+        const contract_address = '0x7304b1d58006d1D546500C477390b7a11A4f59Bc';
+        var address = '0x7304b1d58006d1D546500C477390b7a11A4f59Bc';
+        var eth = null;
+        var nicky = "h";
+        var cuenta = "h";
+        function startApp(web3) {
+         
+            
+           
+            const filter = web3.eth.filter({
+                fromBlock: 0,
+                toBlock: 'latest',
+                address: contract_address,
+                topics: [web3.sha3('Log(address,string)')]
+             })
+
+            filter.get((error, result) => {
+                console.log(result);
+                var i = 0;
+                while ( i < result.length ) {
+                    //document.getElementById("etherlog").innerHTML = document.getElementById("etherlog").innerHTML +"<b>"+ result[i].address + "</b><br>";
+                    document.getElementById("etherlog").innerHTML = document.getElementById("etherlog").innerHTML + "<b>" +result[i].data + "</b><br>";
+                    document.getElementById("etherlog").innerHTML = document.getElementById("etherlog").innerHTML + "<i>" +web3.toChecksumAddress(web3.toHex(result[i].data.substring(0,66))) + "</i><br>";
+                    document.getElementById("etherlog").innerHTML = document.getElementById("etherlog").innerHTML + web3.toAscii(result[i].data.substring(68,result[i].data.length-68)) + "<br><hr><br>";
+                    i++;
+                }                
+            })
+        }
+        
+</script>
+<div id="etherlog"></div>
+</body>
+</html>
