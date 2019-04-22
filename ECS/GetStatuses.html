@@ -7,14 +7,36 @@
 <script src="https://cdn.jsdelivr.net/npm/ethjs@0.3.0/dist/ethjs.min.js"></script>
 <script>
     
-window.addEventListener('load', function() {
+          window.addEventListener('load', async () => {
+            //function() {
             // Check if Web3 has been injected by the browser:
-            if (typeof web3 !== 'undefined') {
+            //if (typeof web3 !== 'undefined') {
                 // You have a web3 browser! Continue below!
-                startApp(web3);
-            } else {
+            //    startApp(web3);
+            //} else {
                 // Warn the user that they need to get a web3 browser
                 // Or install MetaMask, maybe with a nice graphic.
+            //}
+            if (window.ethereum) {
+                window.web3 = new Web3(ethereum);
+                try {
+                    // Request account access if needed
+                    await ethereum.enable();
+                    // Acccounts now exposed
+                    startApp(web3);
+                } catch (error) {
+                    // User denied account access...
+                }
+            }
+            // Legacy dapp browsers...
+            else if (window.web3) {
+                window.web3 = new Web3(web3.currentProvider);
+                // Acccounts always exposed
+                startApp(web3);
+            }
+            // Non-dapp browsers...
+            else {
+                console.log('Non-Ethereum browser detected. You should consider trying MetaMask!');
             }
         });
         const abi = [{
